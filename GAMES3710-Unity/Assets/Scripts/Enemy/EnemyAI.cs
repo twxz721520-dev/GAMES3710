@@ -20,11 +20,25 @@ public class EnemyAI : MonoBehaviour
     public float chaseSpeed = 5f;
     public float searchSpeed = 3f;
 
+    [Header("Vision Settings")]
+    public float viewDistance = 15f;
+    public float viewAngle = 90f;
+    public LayerMask obstacleMask;
+    public LayerMask playerMask;
+
+    [Header("Search Settings")]
+    public float searchDuration = 5f;
+    public float searchRadius = 8f;
+
     private NavMeshAgent _agent;
     private EnemyState _currentState = EnemyState.Patrol;
 
     private PatrolPath _currentPath;
     private int _currentWaypointIndex;
+
+    private Transform _player;
+    private Vector3 _lastKnownPlayerPosition;
+    private float _searchTimer;
 
     private void Awake()
     {
@@ -42,18 +56,72 @@ public class EnemyAI : MonoBehaviour
 
     private void Update()
     {
+        CheckVision();
+
         switch (_currentState)
         {
             case EnemyState.Patrol:
                 UpdatePatrol();
                 break;
             case EnemyState.Chase:
-                // TODO: 追逐逻辑
+                UpdateChase();
                 break;
             case EnemyState.Search:
-                // TODO: 搜索逻辑
+                UpdateSearch();
                 break;
         }
+    }
+
+    private void CheckVision()
+    {
+        Collider[] targetsInRange = Physics.OverlapSphere(transform.position, viewDistance, playerMask);
+
+        foreach (var target in targetsInRange)
+        {
+            Transform targetTransform = target.transform;
+            Vector3 directionToTarget = (targetTransform.position - transform.position).normalized;
+            float angleToTarget = Vector3.Angle(transform.forward, directionToTarget);
+
+            if (angleToTarget < viewAngle / 2f)
+            {
+                float distanceToTarget = Vector3.Distance(transform.position, targetTransform.position);
+
+                if (!Physics.Raycast(transform.position, directionToTarget, distanceToTarget, obstacleMask))
+                {
+                    _player = targetTransform;
+                    _lastKnownPlayerPosition = _player.position;
+
+                    if (_currentState != EnemyState.Chase)
+                    {
+                        SetState(EnemyState.Chase);
+                    }
+                    return;
+                }
+            }
+        }
+
+        if (_currentState == EnemyState.Chase)
+        {
+            SetState(EnemyState.Search);
+        }
+    }
+
+    private bool CanSeePlayer()
+    {
+        if (_player == null) return false;
+
+        Vector3 directionToPlayer = (_player.position - transform.position).normalized;
+        float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
+
+        if (angleToPlayer > viewAngle / 2f) return false;
+
+        float distanceToPlayer = Vector3.Distance(transform.position, _player.position);
+        if (distanceToPlayer > viewDistance) return false;
+
+        if (Physics.Raycast(transform.position, directionToPlayer, distanceToPlayer, obstacleMask))
+            return false;
+
+        return true;
     }
 
     private void SetState(EnemyState newState)
@@ -63,13 +131,55 @@ public class EnemyAI : MonoBehaviour
         {
             case EnemyState.Patrol:
                 _agent.speed = patrolSpeed;
+                if (_currentPath != null && _currentPath.WaypointCount > 0)
+                {
+                    _agent.SetDestination(_currentPath.GetWaypoint(_currentWaypointIndex));
+                }
                 break;
             case EnemyState.Chase:
                 _agent.speed = chaseSpeed;
                 break;
             case EnemyState.Search:
                 _agent.speed = searchSpeed;
+                _searchTimer = searchDuration;
+                SetRandomSearchDestination();
                 break;
+        }
+    }
+
+    private void UpdateChase()
+    {
+        if (_player != null)
+        {
+            _lastKnownPlayerPosition = _player.position;
+            _agent.SetDestination(_player.position);
+        }
+    }
+
+    private void UpdateSearch()
+    {
+        _searchTimer -= Time.deltaTime;
+
+        if (_searchTimer <= 0f)
+        {
+            SetState(EnemyState.Patrol);
+            return;
+        }
+
+        if (!_agent.pathPending && _agent.remainingDistance <= waypointReachThreshold)
+        {
+            SetRandomSearchDestination();
+        }
+    }
+
+    private void SetRandomSearchDestination()
+    {
+        Vector3 randomDirection = Random.insideUnitSphere * searchRadius;
+        randomDirection += _lastKnownPlayerPosition;
+
+        if (NavMesh.SamplePosition(randomDirection, out NavMeshHit hit, searchRadius, NavMesh.AllAreas))
+        {
+            _agent.SetDestination(hit.position);
         }
     }
 
@@ -104,6 +214,31 @@ public class EnemyAI : MonoBehaviour
             {
                 _agent.SetDestination(_currentPath.GetWaypoint(_currentWaypointIndex));
             }
+        }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, viewDistance);
+
+        Vector3 leftBoundary = Quaternion.Euler(0, -viewAngle / 2f, 0) * transform.forward * viewDistance;
+        Vector3 rightBoundary = Quaternion.Euler(0, viewAngle / 2f, 0) * transform.forward * viewDistance;
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(transform.position, transform.position + leftBoundary);
+        Gizmos.DrawLine(transform.position, transform.position + rightBoundary);
+
+        if (_player != null && _currentState == EnemyState.Chase)
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawLine(transform.position, _player.position);
+        }
+
+        if (_currentState == EnemyState.Search)
+        {
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawWireSphere(_lastKnownPlayerPosition, searchRadius);
         }
     }
 }

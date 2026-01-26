@@ -37,3 +37,15 @@
 | Patrol Speed | 巡逻状态移动速度 |
 | Chase Speed | 追逐状态移动速度 |
 | Search Speed | 搜索状态移动速度 |
+| View Distance | 视野距离 |
+| View Angle | 视野角度（度） |
+| Obstacle Mask | 障碍物Layer（阻挡视线） |
+| Player Mask | 玩家Layer（检测目标） |
+| Search Duration | 搜索持续时间（秒） |
+| Search Radius | 搜索范围半径 |
+
+## Layer 设置
+
+1. 创建 `Player` Layer，分配给玩家
+2. 创建 `Obstacle` Layer，分配给墙壁等遮挡物
+3. 在 EnemyAI 组件上设置对应的 Layer Mask
