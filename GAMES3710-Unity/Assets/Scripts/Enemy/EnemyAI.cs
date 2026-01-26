@@ -74,6 +74,15 @@ public class EnemyAI : MonoBehaviour
 
     private void CheckVision()
     {
+        if (PlayerHideState.Instance != null && PlayerHideState.Instance.IsHiding)
+        {
+            if (_currentState == EnemyState.Chase)
+            {
+                SetState(EnemyState.Search);
+            }
+            return;
+        }
+
         Collider[] targetsInRange = Physics.OverlapSphere(transform.position, viewDistance, playerMask);
 
         foreach (var target in targetsInRange)
