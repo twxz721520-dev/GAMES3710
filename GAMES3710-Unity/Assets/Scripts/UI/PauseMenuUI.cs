@@ -74,14 +74,16 @@ public class PauseMenuUI : MonoBehaviour
         _panel.SetActive(true);
         Time.timeScale = 0f;
 
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-
         if (_playerInput == null)
             _playerInput = FindObjectOfType<StarterAssetsInputs>();
         if (_playerInput != null)
+        {
             _playerInput.cursorInputForLook = false;
+            _playerInput.cursorLocked = false;
+        }
 
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
         IsPaused = true;
     }
 
@@ -90,14 +92,16 @@ public class PauseMenuUI : MonoBehaviour
         _panel.SetActive(false);
         Time.timeScale = 1f;
 
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-
         if (_playerInput == null)
             _playerInput = FindObjectOfType<StarterAssetsInputs>();
         if (_playerInput != null)
+        {
             _playerInput.cursorInputForLook = true;
+            _playerInput.cursorLocked = true;
+        }
 
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
         IsPaused = false;
     }
 
@@ -105,6 +109,8 @@ public class PauseMenuUI : MonoBehaviour
     {
         Time.timeScale = 1f;
         IsPaused = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 

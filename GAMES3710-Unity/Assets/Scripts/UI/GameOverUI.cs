@@ -63,14 +63,16 @@ public class GameOverUI : MonoBehaviour
         _panel.SetActive(true);
         Time.timeScale = 0f;
 
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-
         if (_playerInput == null)
             _playerInput = FindObjectOfType<StarterAssetsInputs>();
         if (_playerInput != null)
+        {
             _playerInput.cursorInputForLook = false;
+            _playerInput.cursorLocked = false;
+        }
 
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
         IsGameOver = true;
     }
 
@@ -78,6 +80,8 @@ public class GameOverUI : MonoBehaviour
     {
         Time.timeScale = 1f;
         IsGameOver = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
