@@ -182,6 +182,34 @@ DoorRoot (挂载 LockedDoor + Collider)
 
 ---
 
+## 下蹲系统
+
+按住 **Left Ctrl** 下蹲，松开后站起。头顶有障碍物时无法站起，适用于管道等低矮空间的关卡设计。
+
+### Inspector 参数
+
+在 PlayerCapsule 的 `FirstPersonController` 组件中配置：
+
+| 参数 | 说明 | 建议值 |
+|------|------|--------|
+| Crouch Height | 下蹲时 CharacterController 高度 | 1.0 |
+| Crouch Speed Multiplier | 下蹲速度倍率（基于行走速度） | 0.5 |
+| Crouch Transition Speed | 蹲站过渡平滑速度 | 10 |
+
+### 管道设计指南
+
+- 管道高度应略大于 `CrouchHeight`（如 CrouchHeight=1.0 时，管道高度建议 1.1~1.2）
+- 管道宽度应略大于 CharacterController `Radius × 2`（如 Radius=0.3 时，宽度建议 0.7+）
+- 管道的 Collider 层级需包含在 `GroundLayers` 中，否则头顶检测不会生效
+
+### 注意事项
+
+- 头顶有障碍物时松开 Ctrl **不会站起**，离开障碍物范围后自动站起
+- 下蹲时按 Shift（冲刺）**无效**，速度保持为行走速度 × CrouchSpeedMultiplier
+- 摄像机高度会按站立时的比例自动缩放，无需额外配置
+
+---
+
 ## 关卡适用性
 
 | 系统 | 关卡1 | 关卡2 | 关卡3 |

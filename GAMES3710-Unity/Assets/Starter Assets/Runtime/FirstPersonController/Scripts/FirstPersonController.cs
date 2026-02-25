@@ -45,6 +45,14 @@ namespace StarterAssets
 		[Tooltip("What layers the character uses as ground")]
 		public LayerMask GroundLayers;
 
+		[Header("Crouch")]
+		[Tooltip("Crouch height of the CharacterController")]
+		public float CrouchHeight = 1.0f;
+		[Tooltip("Move speed multiplier when crouching")]
+		public float CrouchSpeedMultiplier = 0.5f;
+		[Tooltip("Speed of crouch transition")]
+		public float CrouchTransitionSpeed = 10.0f;
+
 		[Header("Cinemachine")]
 		[Tooltip("The follow target set in the Cinemachine Virtual Camera that the camera will follow")]
 		public GameObject CinemachineCameraTarget;
@@ -61,6 +69,12 @@ namespace StarterAssets
 		private float _rotationVelocity;
 		private float _verticalVelocity;
 		private float _terminalVelocity = 53.0f;
+
+		// crouch
+		private float _standingHeight;
+		private float _standingCenterY;
+		private float _standingCameraTargetY;
+		private bool _isCrouching;
 
 		// timeout deltatime
 		private float _jumpTimeoutDelta;
@@ -107,6 +121,11 @@ namespace StarterAssets
 			Debug.LogError( "Starter Assets package is missing dependencies. Please use Tools/Starter Assets/Reinstall Dependencies to fix it");
 #endif
 
+			// cache standing dimensions for crouch
+			_standingHeight = _controller.height;
+			_standingCenterY = _controller.center.y;
+			_standingCameraTargetY = CinemachineCameraTarget.transform.localPosition.y;
+
 			// reset our timeouts on start
 			_jumpTimeoutDelta = JumpTimeout;
 			_fallTimeoutDelta = FallTimeout;
@@ -116,6 +135,7 @@ namespace StarterAssets
 		{
 			JumpAndGravity();
 			GroundedCheck();
+			UpdateCrouch();
 			Move();
 		}
 
@@ -129,6 +149,43 @@ namespace StarterAssets
 			// set sphere position, with offset
 			Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z);
 			Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers, QueryTriggerInteraction.Ignore);
+		}
+
+		private void UpdateCrouch()
+		{
+			if (_input.crouch)
+			{
+				_isCrouching = true;
+			}
+			else if (_isCrouching && CanStandUp())
+			{
+				_isCrouching = false;
+			}
+
+			float targetHeight = _isCrouching ? CrouchHeight : _standingHeight;
+			float targetCenterY = targetHeight / 2.0f;
+			float cameraRatio = _standingCameraTargetY / _standingHeight;
+			float targetCameraY = targetHeight * cameraRatio;
+
+			float lerpSpeed = CrouchTransitionSpeed * Time.deltaTime;
+
+			// smoothly transition controller height and center
+			_controller.height = Mathf.Lerp(_controller.height, targetHeight, lerpSpeed);
+			_controller.center = new Vector3(_controller.center.x, Mathf.Lerp(_controller.center.y, targetCenterY, lerpSpeed), _controller.center.z);
+
+			// smoothly transition camera height
+			Vector3 camPos = CinemachineCameraTarget.transform.localPosition;
+			camPos.y = Mathf.Lerp(camPos.y, targetCameraY, lerpSpeed);
+			CinemachineCameraTarget.transform.localPosition = camPos;
+		}
+
+		private bool CanStandUp()
+		{
+			int layerMask = ~(1 << gameObject.layer);
+			float radius = _controller.radius;
+			Vector3 bottom = transform.position + Vector3.up * (CrouchHeight + radius);
+			Vector3 top = transform.position + Vector3.up * (_standingHeight - radius);
+			return !Physics.CheckCapsule(bottom, top, radius, layerMask, QueryTriggerInteraction.Ignore);
 		}
 
 		private void CameraRotation()
@@ -156,7 +213,8 @@ namespace StarterAssets
 		private void Move()
 		{
 			// set target speed based on move speed, sprint speed and if sprint is pressed
-			float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
+			float targetSpeed = _input.sprint && !_isCrouching ? SprintSpeed : MoveSpeed;
+			if (_isCrouching) targetSpeed *= CrouchSpeedMultiplier;
 
 			// a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
 
