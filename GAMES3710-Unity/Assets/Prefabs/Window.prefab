@@ -22,7 +22,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 46424e25e4a77f7449f7de891c64b1c7, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 3.773
+      value: 6.59
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 46424e25e4a77f7449f7de891c64b1c7, type: 3}
       propertyPath: m_LocalPosition.y
@@ -30,7 +30,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 46424e25e4a77f7449f7de891c64b1c7, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 23.516
+      value: 8.06
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 46424e25e4a77f7449f7de891c64b1c7, type: 3}
       propertyPath: m_LocalRotation.w
@@ -134,7 +134,6 @@ MonoBehaviour:
   targetRenderer: {fileID: 0}
   speed: 0.02
   invertDirection: 1
-  textureProperty: _BaseMap
 --- !u!1 &1908720463923360445 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 46424e25e4a77f7449f7de891c64b1c7, type: 3}
@@ -162,7 +161,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 15
+  MaxDistance: 6
   Pan2D: 0
   rolloffMode: 0
   BypassEffects: 0
@@ -257,4 +256,3 @@ MonoBehaviour:
   targetRenderer: {fileID: 0}
   speed: 0.02
   invertDirection: 1
-  textureProperty: _BaseMap
