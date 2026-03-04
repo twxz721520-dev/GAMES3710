@@ -6,6 +6,10 @@ public class PillPickup : Interactable
     [Header("Pill Settings")]
     public string displayName = "Pill";
 
+    [Header("SFX")]
+    public AudioClip pickupClip;
+    [Range(0f, 1f)] public float pickupVolume = 0.8f;
+
     private void Update()
     {
         if (PlayerInRange && Keyboard.current.eKey.wasPressedThisFrame)
@@ -16,6 +20,11 @@ public class PillPickup : Interactable
 
     public override void Interact()
     {
+        if (SFXPlayer.Instance != null)
+        {
+            SFXPlayer.Instance.PlayOneShot(pickupClip, pickupVolume);
+        }
+
         if (SanityManager.Instance != null)
         {
             SanityManager.Instance.AddPill();
