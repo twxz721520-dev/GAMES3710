@@ -57,7 +57,7 @@ public class ReadingUI : MonoBehaviour
 
         // Disable player look input
         if (_playerInput == null)
-            _playerInput = FindObjectOfType<StarterAssetsInputs>();
+            _playerInput = FindAnyObjectByType<StarterAssetsInputs>();
         if (_playerInput != null)
             _playerInput.cursorInputForLook = false;
 
@@ -110,7 +110,7 @@ public class ReadingUI : MonoBehaviour
         _contentText.fontSize = 36f;
         _contentText.color = Color.white;
         _contentText.alignment = TextAlignmentOptions.Center;
-        _contentText.enableWordWrapping = true;
+        _contentText.textWrappingMode = TMPro.TextWrappingModes.Normal;
 
         // Hint text - bottom center
         var hintObj = new GameObject("HintText");

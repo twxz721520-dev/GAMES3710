@@ -77,7 +77,7 @@ public class PauseMenuUI : MonoBehaviour
         Time.timeScale = 0f;
 
         if (_playerInput == null)
-            _playerInput = FindObjectOfType<StarterAssetsInputs>();
+            _playerInput = FindAnyObjectByType<StarterAssetsInputs>();
         if (_playerInput != null)
         {
             _playerInput.cursorInputForLook = false;
@@ -95,7 +95,7 @@ public class PauseMenuUI : MonoBehaviour
         Time.timeScale = 1f;
 
         if (_playerInput == null)
-            _playerInput = FindObjectOfType<StarterAssetsInputs>();
+            _playerInput = FindAnyObjectByType<StarterAssetsInputs>();
         if (_playerInput != null)
         {
             _playerInput.cursorInputForLook = true;
@@ -285,7 +285,7 @@ public class PauseMenuUI : MonoBehaviour
 
         // Read current sensitivity
         if (_fpsController == null)
-            _fpsController = FindObjectOfType<FirstPersonController>();
+            _fpsController = FindAnyObjectByType<FirstPersonController>();
         float current = _fpsController != null ? _fpsController.RotationSpeed : 1f;
         slider.value = current;
         _sensitivityValueText.text = current.ToString("F1");
@@ -296,7 +296,7 @@ public class PauseMenuUI : MonoBehaviour
     private void OnSensitivityChanged(float value)
     {
         if (_fpsController == null)
-            _fpsController = FindObjectOfType<FirstPersonController>();
+            _fpsController = FindAnyObjectByType<FirstPersonController>();
         if (_fpsController != null)
             _fpsController.RotationSpeed = value;
 

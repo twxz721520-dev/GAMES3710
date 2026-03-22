@@ -64,7 +64,7 @@ public class GameOverUI : MonoBehaviour
         Time.timeScale = 0f;
 
         if (_playerInput == null)
-            _playerInput = FindObjectOfType<StarterAssetsInputs>();
+            _playerInput = FindAnyObjectByType<StarterAssetsInputs>();
         if (_playerInput != null)
         {
             _playerInput.cursorInputForLook = false;

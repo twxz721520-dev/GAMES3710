@@ -21,6 +21,16 @@ public class MainMenuUI : MonoBehaviour
 
     private void Start()
     {
+        // Stretch self to fill Canvas
+        var rt = GetComponent<RectTransform>();
+        if (rt != null)
+        {
+            rt.anchorMin = Vector2.zero;
+            rt.anchorMax = Vector2.one;
+            rt.offsetMin = Vector2.zero;
+            rt.offsetMax = Vector2.zero;
+        }
+
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         Time.timeScale = 1f;
@@ -30,27 +40,22 @@ public class MainMenuUI : MonoBehaviour
 
     private void CreateUI()
     {
-        // Black fullscreen background
-        var bg = CreateChild("Background", transform);
+        // Black background
+        var bg = CreateChild("BlackBG", transform);
         StretchFull(bg);
         bg.AddComponent<Image>().color = Color.black;
 
-        // Title logo
-        var titleObj = CreateChild("Title", bg.transform);
-        var titleRect = titleObj.GetComponent<RectTransform>();
-        titleRect.anchorMin = new Vector2(0.5f, 1f);
-        titleRect.anchorMax = new Vector2(0.5f, 1f);
-        titleRect.pivot = new Vector2(0.5f, 1f);
-        titleRect.anchoredPosition = new Vector2(0f, -60f);
-
+        // Title image - aspect-ratio fill (cover)
+        var titleObj = CreateChild("TitleBackground", bg.transform);
+        StretchFull(titleObj);
         var titleImage = titleObj.AddComponent<Image>();
         titleImage.sprite = titleSprite;
-        titleImage.preserveAspect = true;
         titleImage.raycastTarget = false;
-        titleImage.SetNativeSize();
-        // Scale down title to reasonable size
-        float titleScale = 0.5f;
-        titleRect.sizeDelta = titleRect.sizeDelta * titleScale;
+
+        var fitter = titleObj.AddComponent<AspectRatioFitter>();
+        fitter.aspectMode = AspectRatioFitter.AspectMode.EnvelopeParent;
+        if (titleSprite != null)
+            fitter.aspectRatio = titleSprite.rect.width / titleSprite.rect.height;
 
         // Button container
         var container = CreateChild("Buttons", bg.transform);
@@ -122,6 +127,8 @@ public class MainMenuUI : MonoBehaviour
 
     private void OnStart()
     {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
         SceneManager.LoadScene(gameSceneName);
     }
 
