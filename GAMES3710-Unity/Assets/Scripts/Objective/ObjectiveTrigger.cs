@@ -19,6 +19,9 @@ public class ObjectiveTrigger : MonoBehaviour
     [SerializeField] private TriggerMode mode = TriggerMode.Manual;
     [SerializeField] private bool completeObjective;
 
+    [Header("Long-term Goal (optional, updates on trigger)")]
+    [SerializeField] private string newLongTermGoal;
+
     [Header("Key Press (only for OnKeyPress mode)")]
     [SerializeField] private Key[] keys;
 
@@ -108,6 +111,9 @@ public class ObjectiveTrigger : MonoBehaviour
         _triggered = true;
 
         if (ObjectiveManager.Instance == null) return;
+
+        if (!string.IsNullOrEmpty(newLongTermGoal))
+            ObjectiveManager.Instance.SetLongTermGoal(newLongTermGoal);
 
         if (!string.IsNullOrEmpty(subTaskId))
             ObjectiveManager.Instance.CompleteSubTask(subTaskId);

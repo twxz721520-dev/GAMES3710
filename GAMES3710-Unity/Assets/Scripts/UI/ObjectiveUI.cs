@@ -8,9 +8,13 @@ public class ObjectiveUI : MonoBehaviour
 {
     public static ObjectiveUI Instance { get; private set; }
 
-    [Header("Style")]
+    [Header("Style (values are for 1080p, auto-scaled)")]
     [SerializeField] private float panelWidth = 320f;
     [SerializeField] private float panelPadding = 12f;
+    [SerializeField] private float topOffset = 80f;
+    [SerializeField] private float goalFontSize = 14f;
+    [SerializeField] private float objectiveFontSize = 20f;
+    [SerializeField] private float subTaskFontSize = 16f;
     [SerializeField] private Color bgColor = new Color(0f, 0f, 0f, 0.4f);
     [SerializeField] private Color goalColor = new Color(0.6f, 0.6f, 0.6f, 1f);
     [SerializeField] private Color objectiveColor = Color.white;
@@ -20,6 +24,9 @@ public class ObjectiveUI : MonoBehaviour
     [Header("Animation")]
     [SerializeField] private float fadeInDuration = 0.3f;
     [SerializeField] private float strikethroughDelay = 0.2f;
+
+    private const float ReferenceHeight = 1080f;
+    private float _scale;
 
     private GameObject _panel;
     private TMP_Text _goalText;
@@ -166,7 +173,7 @@ public class ObjectiveUI : MonoBehaviour
         rect.sizeDelta = new Vector2(panelWidth - panelPadding * 2 - 16f, 24f);
 
         var text = obj.AddComponent<TextMeshProUGUI>();
-        text.fontSize = 16f;
+        text.fontSize = subTaskFontSize * _scale;
         text.alignment = TextAlignmentOptions.TopLeft;
         text.textWrappingMode = TMPro.TextWrappingModes.NoWrap;
 
@@ -216,7 +223,23 @@ public class ObjectiveUI : MonoBehaviour
 
     private void CreateUI()
     {
-        // Panel - top right
+        // Use Canvas rect height for scaling, not Screen.height
+        var canvas = GetComponentInParent<Canvas>();
+        float canvasHeight = ReferenceHeight;
+        if (canvas != null)
+        {
+            var canvasRect = canvas.GetComponent<RectTransform>();
+            if (canvasRect != null)
+                canvasHeight = canvasRect.rect.height;
+        }
+        _scale = canvasHeight / ReferenceHeight;
+
+        float sw = panelWidth * _scale;
+        float sp = panelPadding * _scale;
+        float margin = 16f * _scale;
+        float top = topOffset * _scale;
+
+        // Panel - top right, below Sanity/Pill UI
         _panel = new GameObject("ObjectivePanel");
         _panel.transform.SetParent(transform, false);
 
@@ -224,14 +247,12 @@ public class ObjectiveUI : MonoBehaviour
         panelRect.anchorMin = new Vector2(1f, 1f);
         panelRect.anchorMax = new Vector2(1f, 1f);
         panelRect.pivot = new Vector2(1f, 1f);
-        panelRect.anchoredPosition = new Vector2(-16f, -16f);
+        panelRect.anchoredPosition = new Vector2(-margin, -top);
 
         // Use ContentSizeFitter for auto-height
         var panelLayout = _panel.AddComponent<VerticalLayoutGroup>();
-        panelLayout.padding = new RectOffset(
-            (int)panelPadding, (int)panelPadding,
-            (int)panelPadding, (int)panelPadding);
-        panelLayout.spacing = 4f;
+        panelLayout.padding = new RectOffset((int)sp, (int)sp, (int)sp, (int)sp);
+        panelLayout.spacing = 4f * _scale;
         panelLayout.childAlignment = TextAnchor.UpperLeft;
         panelLayout.childControlWidth = true;
         panelLayout.childControlHeight = true;
@@ -241,7 +262,7 @@ public class ObjectiveUI : MonoBehaviour
         var sizeFitter = _panel.AddComponent<ContentSizeFitter>();
         sizeFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
         sizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-        panelRect.sizeDelta = new Vector2(panelWidth, 0f);
+        panelRect.sizeDelta = new Vector2(sw, 0f);
 
         var panelImage = _panel.AddComponent<Image>();
         panelImage.color = bgColor;
@@ -254,10 +275,9 @@ public class ObjectiveUI : MonoBehaviour
         // Long-term goal text
         var goalObj = new GameObject("GoalText");
         goalObj.transform.SetParent(_panel.transform, false);
-        var goalRect = goalObj.AddComponent<RectTransform>();
-        goalRect.sizeDelta = new Vector2(panelWidth - panelPadding * 2, 20f);
+        goalObj.AddComponent<RectTransform>();
         _goalText = goalObj.AddComponent<TextMeshProUGUI>();
-        _goalText.fontSize = 14f;
+        _goalText.fontSize = goalFontSize * _scale;
         _goalText.fontStyle = FontStyles.Italic;
         _goalText.color = goalColor;
         _goalText.alignment = TextAlignmentOptions.TopLeft;
@@ -266,10 +286,9 @@ public class ObjectiveUI : MonoBehaviour
         // Current objective text
         var objObj = new GameObject("ObjectiveText");
         objObj.transform.SetParent(_panel.transform, false);
-        var objRect = objObj.AddComponent<RectTransform>();
-        objRect.sizeDelta = new Vector2(panelWidth - panelPadding * 2, 28f);
+        objObj.AddComponent<RectTransform>();
         _objectiveText = objObj.AddComponent<TextMeshProUGUI>();
-        _objectiveText.fontSize = 20f;
+        _objectiveText.fontSize = objectiveFontSize * _scale;
         _objectiveText.fontStyle = FontStyles.Bold;
         _objectiveText.color = objectiveColor;
         _objectiveText.alignment = TextAlignmentOptions.TopLeft;

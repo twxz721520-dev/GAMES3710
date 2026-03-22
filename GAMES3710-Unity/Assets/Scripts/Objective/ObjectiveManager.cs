@@ -68,19 +68,23 @@ public class ObjectiveManager : MonoBehaviour
     /// </summary>
     public void CompleteSubTask(string subTaskId)
     {
-        if (AllCompleted) return;
-
-        var objective = CurrentObjective;
-        if (objective == null) return;
-
-        foreach (var sub in objective.subTasks)
+        // Search all objectives so future sub-tasks can be pre-completed
+        for (int i = _currentIndex; i < objectives.Count; i++)
         {
-            if (sub.id == subTaskId && !sub.completed)
+            foreach (var sub in objectives[i].subTasks)
             {
-                sub.completed = true;
-                OnSubTaskCompleted?.Invoke(sub);
-                CheckObjectiveComplete();
-                return;
+                if (sub.id == subTaskId && !sub.completed)
+                {
+                    sub.completed = true;
+
+                    // Only fire UI event if it's the current objective
+                    if (i == _currentIndex)
+                    {
+                        OnSubTaskCompleted?.Invoke(sub);
+                        CheckObjectiveComplete();
+                    }
+                    return;
+                }
             }
         }
     }
@@ -133,6 +137,8 @@ public class ObjectiveManager : MonoBehaviour
         else
         {
             OnObjectiveChanged?.Invoke(CurrentObjective);
+            // Check if the new objective was already pre-completed
+            CheckObjectiveComplete();
         }
     }
 }
