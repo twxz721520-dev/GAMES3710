@@ -6337,6 +6337,63 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.014954712, y: 0.01192208, z: 0.0071865493}
   m_Center: {x: 0, y: 0, z: 0.000000029802322}
+--- !u!1001 &246134962
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 3f4392b9189d9ff44b32e002d27aa540, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 7.3033366
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3f4392b9189d9ff44b32e002d27aa540, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.4165454
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3f4392b9189d9ff44b32e002d27aa540, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 18.551296
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3f4392b9189d9ff44b32e002d27aa540, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3f4392b9189d9ff44b32e002d27aa540, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3f4392b9189d9ff44b32e002d27aa540, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3f4392b9189d9ff44b32e002d27aa540, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3f4392b9189d9ff44b32e002d27aa540, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3f4392b9189d9ff44b32e002d27aa540, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3f4392b9189d9ff44b32e002d27aa540, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 3f4392b9189d9ff44b32e002d27aa540, type: 3}
+      propertyPath: m_Name
+      value: vialscolor
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 3f4392b9189d9ff44b32e002d27aa540, type: 3}
 --- !u!1001 &247988593
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -49401,3 +49458,4 @@ SceneRoots:
   - {fileID: 525437920}
   - {fileID: 1228334887}
   - {fileID: 1016057697}
+  - {fileID: 246134962}
