@@ -52509,6 +52509,7 @@ MonoBehaviour:
   pillCount: 0
   pillRestoreAmount: 30
   lowSanityThreshold: 30
+  swallowSound: {fileID: 8300000, guid: 9e9c33a0f1138cf4db847f39c3aa9442, type: 3}
 --- !u!114 &3239944139789812187
 MonoBehaviour:
   m_ObjectHideFlags: 0

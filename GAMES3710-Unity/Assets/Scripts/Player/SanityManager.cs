@@ -17,6 +17,10 @@ public class SanityManager : MonoBehaviour
     [Header("Low Sanity Threshold")]
     public float lowSanityThreshold = 30f;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip swallowSound;
+    private AudioSource audioSource;
+
     public event Action OnSanityChanged;
     public event Action OnPillCountChanged;
     public event Action OnSanityDepleted;
@@ -33,6 +37,16 @@ public class SanityManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+
+    private void Start()
+    {
+        audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.playOnAwake = false;
+        audioSource.spatialBlend = 0f;
+        audioSource.volume = 1f;
+        audioSource.loop = false;
+        audioSource.ignoreListenerPause = true;
     }
 
     private void Update()
@@ -73,6 +87,11 @@ public class SanityManager : MonoBehaviour
     public void UsePill()
     {
         if (pillCount <= 0) return;
+
+        if (swallowSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(swallowSound);
+        }
 
         pillCount--;
         currentSanity = Mathf.Min(maxSanity, currentSanity + pillRestoreAmount);
