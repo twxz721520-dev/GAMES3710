@@ -1,2 +1,21 @@
 fileFormatVersion: 2
 guid: 13b0f43f80312c54e879491637e5ca8d
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - titleSprite: {instanceID: 0}
+  - introductionNormal: {instanceID: 0}
+  - introductionHovered: {instanceID: 0}
+  - startNormal: {instanceID: 0}
+  - startHovered: {instanceID: 0}
+  - exitNormal: {instanceID: 0}
+  - exitHovered: {instanceID: 0}
+  - clickSound: {fileID: 8300000, guid: 1b0c15ab0c9e2914ebb1a056c12c4ba1, type: 3}
+  - hoverSound: {fileID: 8300000, guid: aec516265a801644396fc4a702689150, type: 3}
+  - audioSource: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

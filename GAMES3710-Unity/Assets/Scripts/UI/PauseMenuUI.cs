@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
 using StarterAssets;
+using UnityEngine.EventSystems;
 
 public class PauseMenuUI : MonoBehaviour
 {
@@ -15,6 +16,11 @@ public class PauseMenuUI : MonoBehaviour
     private FirstPersonController _fpsController;
     private TMP_Text _sensitivityValueText;
     private bool _wasReading;
+
+    [Header("Audio")]
+    [SerializeField] private AudioClip clickSound;
+    [SerializeField] private AudioClip hoverSound;
+    private AudioSource audioSource;
 
     private void Awake()
     {
@@ -39,6 +45,9 @@ public class PauseMenuUI : MonoBehaviour
             rt.offsetMin = Vector2.zero;
             rt.offsetMax = Vector2.zero;
         }
+
+        audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.playOnAwake = false;
 
         CreateUI();
         _panel.SetActive(false);
@@ -67,7 +76,6 @@ public class PauseMenuUI : MonoBehaviour
                 Show();
         }
 
-        // Update at end of frame so next frame knows if reading was active this frame
         _wasReading = ReadingUI.IsReading;
     }
 
@@ -127,7 +135,6 @@ public class PauseMenuUI : MonoBehaviour
 
     private void CreateUI()
     {
-        // Panel - fullscreen semi-transparent overlay
         _panel = new GameObject("PausePanel");
         _panel.transform.SetParent(transform, false);
 
@@ -140,7 +147,6 @@ public class PauseMenuUI : MonoBehaviour
         var panelImage = _panel.AddComponent<Image>();
         panelImage.color = new Color(0f, 0f, 0f, 0.7f);
 
-        // Title - "PAUSED"
         var titleObj = new GameObject("TitleText");
         titleObj.transform.SetParent(_panel.transform, false);
 
@@ -157,10 +163,8 @@ public class PauseMenuUI : MonoBehaviour
         titleText.color = Color.white;
         titleText.alignment = TextAlignmentOptions.Center;
 
-        // Sensitivity slider
         CreateSensitivitySlider(80f);
 
-        // Buttons
         CreateButton("ResumeBtn", "Resume", 0f, Hide);
         CreateButton("RestartBtn", "Restart", -70f, OnRestart);
         CreateButton("QuitBtn", "Quit Game", -140f, OnQuit);
@@ -168,7 +172,6 @@ public class PauseMenuUI : MonoBehaviour
 
     private void CreateSensitivitySlider(float yOffset)
     {
-        // Container
         var container = new GameObject("SensitivityRow");
         container.transform.SetParent(_panel.transform, false);
 
@@ -179,7 +182,6 @@ public class PauseMenuUI : MonoBehaviour
         containerRect.anchoredPosition = new Vector2(0f, yOffset);
         containerRect.sizeDelta = new Vector2(300f, 30f);
 
-        // Label
         var labelObj = new GameObject("Label");
         labelObj.transform.SetParent(container.transform, false);
 
@@ -195,7 +197,6 @@ public class PauseMenuUI : MonoBehaviour
         labelText.color = Color.white;
         labelText.alignment = TextAlignmentOptions.MidlineLeft;
 
-        // Value text
         var valueObj = new GameObject("Value");
         valueObj.transform.SetParent(container.transform, false);
 
@@ -210,7 +211,6 @@ public class PauseMenuUI : MonoBehaviour
         _sensitivityValueText.color = Color.white;
         _sensitivityValueText.alignment = TextAlignmentOptions.MidlineRight;
 
-        // Slider
         var sliderObj = new GameObject("Slider");
         sliderObj.transform.SetParent(container.transform, false);
 
@@ -220,7 +220,6 @@ public class PauseMenuUI : MonoBehaviour
         sliderRect.offsetMin = Vector2.zero;
         sliderRect.offsetMax = Vector2.zero;
 
-        // Background track
         var bgObj = new GameObject("Background");
         bgObj.transform.SetParent(sliderObj.transform, false);
 
@@ -233,7 +232,6 @@ public class PauseMenuUI : MonoBehaviour
         var bgImage = bgObj.AddComponent<Image>();
         bgImage.color = new Color(0.2f, 0.2f, 0.2f, 1f);
 
-        // Fill area
         var fillArea = new GameObject("Fill Area");
         fillArea.transform.SetParent(sliderObj.transform, false);
 
@@ -255,7 +253,6 @@ public class PauseMenuUI : MonoBehaviour
         var fillImage = fillObj.AddComponent<Image>();
         fillImage.color = new Color(0.6f, 0.6f, 0.6f, 1f);
 
-        // Handle area
         var handleArea = new GameObject("Handle Slide Area");
         handleArea.transform.SetParent(sliderObj.transform, false);
 
@@ -274,7 +271,6 @@ public class PauseMenuUI : MonoBehaviour
         var handleImage = handleObj.AddComponent<Image>();
         handleImage.color = Color.white;
 
-        // Wire up Slider component
         var slider = sliderObj.AddComponent<Slider>();
         slider.targetGraphic = handleImage;
         slider.fillRect = fillRect;
@@ -283,7 +279,6 @@ public class PauseMenuUI : MonoBehaviour
         slider.minValue = 0.1f;
         slider.maxValue = 3f;
 
-        // Read current sensitivity
         if (_fpsController == null)
             _fpsController = FindAnyObjectByType<FirstPersonController>();
         float current = _fpsController != null ? _fpsController.RotationSpeed : 1f;
@@ -321,9 +316,19 @@ public class PauseMenuUI : MonoBehaviour
 
         var button = btnObj.AddComponent<Button>();
         button.targetGraphic = btnImage;
-        button.onClick.AddListener(onClick);
+        button.onClick.AddListener(() =>
+        {
+            PlayClickSound();
+            onClick.Invoke();
+        });
 
-        // Button text
+        var trigger = btnObj.AddComponent<EventTrigger>();
+
+        var entry = new EventTrigger.Entry();
+        entry.eventID = EventTriggerType.PointerEnter;
+        entry.callback.AddListener((eventData) => { PlayHoverSound(); });
+        trigger.triggers.Add(entry);
+
         var textObj = new GameObject("ButtonText");
         textObj.transform.SetParent(btnObj.transform, false);
 
@@ -338,5 +343,21 @@ public class PauseMenuUI : MonoBehaviour
         btnText.fontSize = 28f;
         btnText.color = Color.white;
         btnText.alignment = TextAlignmentOptions.Center;
+    }
+
+    private void PlayClickSound()
+    {
+        if (clickSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(clickSound);
+        }
+    }
+
+    private void PlayHoverSound()
+    {
+        if (hoverSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(hoverSound);
+        }
     }
 }

@@ -19,9 +19,13 @@ public class MainMenuUI : MonoBehaviour
     [Header("Settings")]
     [SerializeField] private string gameSceneName = "SampleScene";
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip clickSound;
+    [SerializeField] private AudioClip hoverSound;
+    [SerializeField] private AudioSource audioSource;
+
     private void Start()
     {
-        // Stretch self to fill Canvas
         var rt = GetComponent<RectTransform>();
         if (rt != null)
         {
@@ -40,12 +44,10 @@ public class MainMenuUI : MonoBehaviour
 
     private void CreateUI()
     {
-        // Black background
         var bg = CreateChild("BlackBG", transform);
         StretchFull(bg);
         bg.AddComponent<Image>().color = Color.black;
 
-        // Title image - aspect-ratio fill (cover)
         var titleObj = CreateChild("TitleBackground", bg.transform);
         StretchFull(titleObj);
         var titleImage = titleObj.AddComponent<Image>();
@@ -57,7 +59,6 @@ public class MainMenuUI : MonoBehaviour
         if (titleSprite != null)
             fitter.aspectRatio = titleSprite.rect.width / titleSprite.rect.height;
 
-        // Button container
         var container = CreateChild("Buttons", bg.transform);
         var containerRect = container.GetComponent<RectTransform>();
         containerRect.anchorMin = new Vector2(0.5f, 0.35f);
@@ -74,17 +75,12 @@ public class MainMenuUI : MonoBehaviour
         layout.childForceExpandWidth = false;
         layout.childForceExpandHeight = false;
 
-        // Buttons
-        CreateMenuButton("IntroductionBtn", container.transform,
-            introductionNormal, introductionHovered, OnIntroduction);
-        CreateMenuButton("StartBtn", container.transform,
-            startNormal, startHovered, OnStart);
-        CreateMenuButton("ExitBtn", container.transform,
-            exitNormal, exitHovered, OnExit);
+        CreateMenuButton("IntroductionBtn", container.transform, introductionNormal, introductionHovered, OnIntroduction);
+        CreateMenuButton("StartBtn", container.transform, startNormal, startHovered, OnStart);
+        CreateMenuButton("ExitBtn", container.transform, exitNormal, exitHovered, OnExit);
     }
 
-    private void CreateMenuButton(string name, Transform parent,
-        Sprite normal, Sprite hovered, UnityEngine.Events.UnityAction onClick)
+    private void CreateMenuButton(string name, Transform parent, Sprite normal, Sprite hovered, UnityEngine.Events.UnityAction onClick)
     {
         var btnObj = CreateChild(name, parent);
         var rect = btnObj.GetComponent<RectTransform>();
@@ -95,7 +91,6 @@ public class MainMenuUI : MonoBehaviour
         image.color = Color.white;
         image.type = Image.Type.Simple;
 
-        // Size based on sprite native size, scaled down
         if (normal != null)
         {
             image.SetNativeSize();
@@ -116,12 +111,41 @@ public class MainMenuUI : MonoBehaviour
         spriteState.selectedSprite = hovered;
         button.spriteState = spriteState;
 
-        button.onClick.AddListener(onClick);
+        button.onClick.AddListener(() =>
+        {
+            PlayClickSound();
+            onClick.Invoke();
+        });
+
+        var trigger = btnObj.AddComponent<EventTrigger>();
+        var entry = new EventTrigger.Entry();
+        entry.eventID = EventTriggerType.PointerEnter;
+        entry.callback.AddListener((eventData) => { PlayHoverSound(); });
+        trigger.triggers.Add(entry);
+    }
+
+    private void PlayClickSound()
+    {
+        Debug.Log("click sound called");
+
+        if (clickSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(clickSound);
+        }
+    }
+
+    private void PlayHoverSound()
+    {
+        Debug.Log("hover sound called");
+
+        if (hoverSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(hoverSound);
+        }
     }
 
     private void OnIntroduction()
     {
-        // TODO: show introduction panel
         Debug.Log("Introduction - not yet implemented");
     }
 

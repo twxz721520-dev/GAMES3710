@@ -11354,6 +11354,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aba5ba267413f8540a49faa917cbfee1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PauseMenuUI
+  clickSound: {fileID: 8300000, guid: 1b0c15ab0c9e2914ebb1a056c12c4ba1, type: 3}
+  hoverSound: {fileID: 8300000, guid: aec516265a801644396fc4a702689150, type: 3}
 --- !u!1 &491554863 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: ed98189609aa5714a9ae5d79b45447a1, type: 3}
